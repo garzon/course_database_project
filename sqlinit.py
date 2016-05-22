@@ -1,26 +1,47 @@
 #!/bin/python
-import informixdb
-import os
+# -*- coding: utf-8 -*-
 
-Database = 'd_1460371579579196'
-#Server='172.16.16.181'
-Server='ifxserver1'
-Username = 'lphmxmnl'
-Password = 'gfAHlK4TUv'
+debug = True
+
+if globals().get('debug'):
+	import MySQLdb
+	informixdb = MySQLdb
+else:
+	import informixdb
+
 
 def init_SQL():
+
+    Database = 'd_1460371579579196'
+    if globals().get('debug'):
+        Server = 'localhost'
+        Username = 'root'
+        Password = 'toor'
+    else:
+        Server = 'ifxserver1'
+        Username = 'lphmxmnl'
+        Password = 'gfAHlK4TUv'
 
     try:
         cur = conn = None
         #connect
-        conn = informixdb.connect(Database+'@'+Server,Username,Password)
+        if globals().get('debug'):
+            conn = informixdb.connect(Server, Username, Password, Database)
+        else:
+            conn = informixdb.connect(Database + '@' + Server, Username, Password)
         if not conn:
-            raise Exception("Failed to connect via SQL to " + dbservername)
+            raise Exception("Failed to connect via SQL")
         else:
             print("connect !!!!")
         #get cursor
         cur = conn.cursor()
-        cur.execute("""create table user
+
+        cur.execute("DROP TABLE IF EXISTS User");
+        cur.execute("DROP TABLE IF EXISTS Artist");
+        cur.execute("DROP TABLE IF EXISTS Music");
+        cur.execute("DROP TABLE IF EXISTS Comment");
+
+        cur.execute("""create table User
 (username char(30) not null,
  password char(32) not null,
  region char(16),
@@ -28,13 +49,13 @@ def init_SQL():
  mail char(30),
  primary key(username))""")
 
-        cur.execute("""create table artist
+        cur.execute("""create table Artist
 (author char(40) not null,
  genre char (10),
  introduction char(200),
  primary key(author))""")
 
-        cur.execute("""create table music
+        cur.execute("""create table Music
 (music_id int not null,
  name char(100) not null,
  file_path char(200) not null,
@@ -42,19 +63,15 @@ def init_SQL():
  type char(20),
  username char(30) not null,
  introduction char(100),
- primary key(music_id),
- constraint fk1 foreign key(author) references artist,
- constraint fk2 foreign key(username) references user)""")
+ primary key(music_id))""")
 
-        cur.execute("""create table comment
+        cur.execute("""create table Comment
 (id int not null,
  score int not null,
  feedback char(200),
  username char(30) not null,
  music_id int not null,
- primary key(id),
- constraint fk1 foreign key(username) references user,
- constraint fk2 foreign key(music_id) references music)""")
+ primary key(id))""")
 
         conn.commit()
 

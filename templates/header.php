@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>音乐分享平台</title>
 	<script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/static/bower_components/jquery-form/jquery.form.js"></script>
 	<script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 	<script src="/static/bower_components/angular/angular.min.js"></script>
 	<script src="/static/bower_components/jquery-ui/jquery-ui.min.js"></script>

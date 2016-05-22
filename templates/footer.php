@@ -3,7 +3,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="navbar-header col-md-2 col-sm-2 col-xs-12">
-						<a href="/index.php"><img class="navbar-header-logo" src="/img/logo.png" /></a>
+						<a href="/index.php"><img class="navbar-header-logo" src="/static/logo.png" /></a>
 					</div>
 					<div class="col-md-6 col-sm-6 col-xs-8 grey">
 						<p>Midi Piano Online</p>

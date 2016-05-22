@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+debug = True
+
 import os
 
 from flask import Flask, abort, current_app, make_response, render_template
@@ -14,11 +16,11 @@ app = Flask(__name__)
 # Error handlers =====================================================================
 @app.errorhandler(400)
 def empty_req_error(error):
-	return u'{"failed": true, "msg": "请完整填写表单"}', 400
+	return u'{"failed": true, "msg": "请完整填写表单"}', 200
 
 @app.errorhandler(403)
 def auth_error(error):
-	return u'{"failed": true, "msg": "用户名或密码错误"}', 403
+	return u'{"failed": true, "msg": "用户名或密码错误"}', 200
 
 @app.errorhandler(404)
 def cart_error(error):
@@ -88,5 +90,5 @@ def upload_handler():
 
 if __name__ == '__main__':
 	host = os.getenv("APP_HOST", "0.0.0.0")
-	port = int(os.getenv("APP_PORT", "80"))
+	port = int(os.getenv("APP_PORT", "7654" if globals().get('debug') else '80'))
 	app.run(host=host, port=port, debug=True)

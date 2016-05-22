@@ -26,16 +26,20 @@ class User(MysqlModel):
 	def check_email_registered(cls, mail):
 		mail = cls.escape(mail)
 		res = cls.query("select count(*) from `User` where mail='%s'" % mail)
-		if res[0] != 0:
+		if res[0][0] != 0:
 			return True
 		return False
 
 	@classmethod
 	def register(cls, username, password, mail):
+		if len(username) < 3:
+			return u'用户名长度必须大于2'
+		if len(mail) < 4:
+			return u'邮箱长度必须大于3'
 		usr = User(username)
 		if usr.load():
 			return u'用户名已存在'
-		if cls.check_email_registered(cls, mail):
+		if cls.check_email_registered(mail):
 			return u'邮箱已被注册'
 		usr.mail = mail
 		usr.password = cls.genHash(password)

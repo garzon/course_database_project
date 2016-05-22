@@ -2,10 +2,8 @@ import json
 from flask import make_response, request, abort
 
 def parse_req_body(arr):
-	if request.data == '':
-		abort(400)
 	try:
-		ret = json.loads(request.data)
+		ret = request.form
 		for i in arr:
 			if ret[i]:
 				pass
