@@ -1,0 +1,5 @@
+language: py2
+script:
+  - sudo pip install -r requirements.txt
+  - uwsgi --gevent 2000 -l 1000 --processes 8 --http "0.0.0.0:80" --wsgi-file /home/opuser/project/app.py --callable app
+  #- python app.py
