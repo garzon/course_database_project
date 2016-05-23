@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>音乐分享平台</title>
+	<title>Music Online音乐分享平台</title>
 	<script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/static/bower_components/jquery-form/jquery.form.js"></script>
 	<script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -36,6 +36,7 @@
 	<link rel="stylesheet" href="/static/bower_components/angular-ui/build/angular-ui.min.css">
 	<link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/static/midikeyboard.css">
 
 	<style is="custom-style">
 		.horizontal-section-container {
@@ -56,26 +57,51 @@
 			--paper-tabs-selection-bar-color: rgb(43, 162, 226);
 		}
 	</style>
+    
+    <script src="/static/bower_components/requirejs/require.js"></script>
+	<script>
+		require.config({
+			paths : {
+				"MidiController" : ["/static/js/midicontroller"],
+				"MidiData" : ["/static/js/mididata"],
+				"MidiView" : ["/static/js/midiview"],
+				"WebAudioChannel" : ["/static/js/webaudiochannel"],
+				"WebAudioController" : ["/static/js/webaudiocontroller"],
+				"WebAudioInstructmentNode" : ["/static/js/webaudioinstructmentnode"],
+				"WebAudioMuyuNode" : ["/static/js/webaudiomuyunode"],
+				"WebAudioPianoNode" : ["/static/js/webaudiopianonode"],
+				"WebAudioSynth" : ["/static/js/webaudiosynth"],
+				"WebAudioViolinNode" : ["/static/js/webaudioviolinnode"],
+				"WebAudioHornNode": ["/static/js/webaudiohornnode"],
+				"WebAudioFluidPianoNode": ["/static/js/webaudiofluidpianonode"],
+				"WebMidiInstructmentNode": ["/static/js/webmidiinstructmentnode"],
+				"OutputStream": ["/static/js/outputstream"],
+				"MidiEvent": ["/static/js/midievent"],
+				"jasmid-Stream": ["/static/js/jasmid/stream"],
+				"jasmid-MidiFile": ["/static/js/jasmid/midifile"]
+			}
+		});
+	</script>
 </head>
 
-<body>
+<body {{'class="editor-body"' if request.url.find("/editor") != -1 else ''}}>
 
 	<div class="row">
 		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 			<div class="container-fluid">
 				<div class="navbar-header col-md-2 col-sm-2 col-xs-12">
-					<a href="/index.php"><img class="navbar-header-logo" src="/static/logo.png" /></a>
+					<a href="/"><img class="navbar-header-logo" src="/static/logo.png" /></a>
 				</div>
 
 				<span class="col-md-7 col-sm-5 col-xs-8">
 					<paper-tabs noink class="blue col-md-9 col-xs-12">
-						aaa
+						<paper-tab>Music Online</paper-tab>
 					</paper-tabs>
 				</span>
 
 				<span class="pull-right">
 					{% if session.get('username', None) %}
-						<a href="/pc_new_publish.php" class="btn btn-sm btn-success font-black">发布职位</a>
+						<a href="/upload" class="btn btn-sm btn-success font-black">分享音乐</a>
 						<a href="/login" class="btn btn-sm btn-default font-black">注销</a>
 					{% else %}
 						<a href="/login" class="btn btn-sm btn-primary font-black">注册/登录</a>

@@ -254,3 +254,13 @@ $(function(){
     };
     chbxs.change(callback).each(callback);
 });
+
+function findMidStr(haystack, startWith, endWith) {
+    var stPos = haystack.indexOf(startWith);
+    if(stPos == -1) return '';
+    haystack = haystack.substr(stPos+startWith.length);
+    var endPos = haystack.indexOf(endWith);
+    if(endPos == -1) return haystack;
+    haystack = haystack.substr(0, endPos);
+    return haystack;
+}

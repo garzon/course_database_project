@@ -1,0 +1,103 @@
+.piano-keyboard {
+    height: 100px;
+    width: 100%;
+    display: block;
+    position: fixed;
+    margin: 0 1%;
+    z-index: 1;
+}
+
+.piano-keyboard-bottom {
+    bottom: 0;
+}
+
+.piano-keyboard-key {
+    top: 0;
+    border: 1px solid;
+    border-radius: 3px;
+    display: inline-block;
+    float: left;
+}
+
+.piano-keyboard-blackkey {
+    background-color: #000000;
+    height: 60%;
+    z-index: 10;
+    position: relative;
+}
+
+.piano-keyboard-whitekey {
+    height: 100%;
+    background-color: #ffffff;
+    z-index: 5;
+}
+
+.piano-bar {
+    z-index: -1;
+    position: absolute !important;
+    border: 1px solid grey;
+    border-radius: 3px;
+}
+
+.piano-bar-container {
+
+}
+
+.piano-bar-selected {
+    background-color: red !important;
+}
+
+.piano-keyboard-key-pressed--2 {
+    /* a wide bar for each beat */
+    height: 0 !important;
+    width: 100% !important;
+    z-index: -3 !important;
+    border: 1px dashed grey !important;
+}
+
+.piano-keyboard-key-pressed--1 {
+    /* a wide bar for each measure */
+    background-color: grey !important;
+    width: 100% !important;
+    z-index: -2 !important;
+    border: 0 !important;
+}
+
+.piano-keyboard-key-pressed-0 {
+    background-color: aquamarine;
+}
+
+.piano-keyboard-key-pressed-1 {
+    background-color: #2191c0;
+}
+
+.piano-keyboard-key-pressed-2 {
+    background-color: #eeb420;
+}
+
+.piano-keyboard-key-pressed-otherchannel {
+    background-color: orchid;
+}
+
+.scoring {
+    z-index: 11;
+    position: absolute;
+}
+
+.scoring-perfect {
+    color: forestgreen;
+    font-weight: bold;
+}
+
+.scoring-good {
+    color: greenyellow;
+}
+
+.scoring-ok {
+    color: #ffff00;
+}
+
+.scoring-wrong {
+    color: red;
+    font-weight: bold;
+}

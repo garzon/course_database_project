@@ -1,15 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 debug = True
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 import os
 
-from flask import Flask, abort, current_app, make_response, render_template
-
+from flask import Flask, abort, current_app, make_response, render_template, send_file
+from werkzeug import secure_filename
 from util import *
 from api_util import *
 
 from user import User
+from music import Music
+from artist import Artist
+from comment import Comment
 
 app = Flask(__name__)
 
@@ -18,23 +24,56 @@ app = Flask(__name__)
 def empty_req_error(error):
 	return u'{"failed": true, "msg": "请完整填写表单"}', 200
 
+@app.errorhandler(501)
+def redirect_handler(error):
+	resp = make_response('', 302)
+	resp.headers['Location'] = '/login'
+	return resp
+
+@app.errorhandler(401)
+def not_login_handler(error):
+	return u'{"failed": true, "msg": "请先登录"}', 200
+
 @app.errorhandler(403)
 def auth_error(error):
 	return u'{"failed": true, "msg": "用户名或密码错误"}', 200
 
 @app.errorhandler(404)
-def cart_error(error):
-	return u'{"failed": true, "msg": "页面不存在"}', 404
+def not_found_error(error):
+	return u'{"failed": true, "msg": "页面不存在，请<a href=\'/\'>返回首页</a>"}', 404
 
 # Controllers ========================================================================
 
+def dummy():
+	pass
+
 @app.route('/')
-def hello_world():
-	return 'Hello World!'
+def listing_handler():
+	auth(dummy)
+	return make_response(wrapper(render_template('index.php', request=request)), 200)
 
 @app.route('/api/list', methods=['GET'])
 def getlisting_api_handler():
-	pass
+	score = request.args.get('score', None)
+	if score:
+		try:
+			score = int(score)
+			return make_response(json.dumps(Music.getListByScore(score)), 200)
+		except:
+			pass
+
+	return make_response(json.dumps(Music.getList()), 200)
+
+@app.route('/api/delete/<int:music_id>', methods=['POST'])
+def delete_api_handler(music_id):
+	music = Music(music_id)
+	if music.load() == False: abort(404)
+	def callback():
+		abort(401)
+	usr = auth(callback)
+	if music.username == usr.username:
+		music.delete()
+	return succ(u'删除成功！')
 
 @app.route('/login', methods=['GET'])
 def login_page_handler():
@@ -72,23 +111,101 @@ def register_api_handler():
 	return resp
 
 
-@app.route('/view', methods=['GET'])
-def view_handler():
-	pass
+@app.route('/view/<int:music_id>', methods=['GET'])
+def view_handler(music_id):
+	resp = make_response(wrapper(render_template('view.php', music_id=music_id)), 200)
+	return resp
 
-@app.route('/api/comment', methods=['POST'])
-def comment_api_handler():
-	pass
+@app.route('/editor/<int:music_id>', methods=['GET'])
+def editor_handler(music_id):
+	resp = make_response(wrapper(render_template('editor.php', music_id=music_id)), 200)
+	return resp
 
-@app.route('/api/detail', methods=['GET'])
-def detail_api_handler():
-	pass
+@app.route('/api/get_music/<int:music_id>', methods=['GET'])
+def get_music_api_handler(music_id):
+	music = Music(music_id)
+	if music.load() == False: abort(404)
+	return send_file(music.file_path, music.getContentType())
 
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/api/comment/<int:music_id>', methods=['POST'])
+def comment_api_handler(music_id):
+	music = Music(music_id)
+	if music.load() == False: abort(404)
+	def callback():
+		abort(401)
+	usr = auth(callback)
+	data = parse_req_body(['score', 'feedback'])
+	try:
+		score = int(data['score'])
+	except:
+		abort(400)
+	comment = Comment()
+	comment.score = score
+	comment.feedback = data['feedback']
+	comment.username = usr.username
+	comment.music_id = music.music_id
+	comment.save()
+	return succ(u'评论成功！')
+
+@app.route('/api/detail/<int:music_id>', methods=['GET'])
+def detail_api_handler(music_id):
+	music = Music(music_id)
+	if music.load() == False: abort(404)
+
+	obj = {i:j for i, j in music.__dict__.items()}
+	obj['file_path'] = music.file_path[-5:]
+	obj['comments'] = music.getComments()
+	obj['content_type'] = music.getContentType()
+	obj['score'] = music.getScore()
+
+	return make_response(json.dumps(obj), 200)
+
+@app.route('/upload', methods=['GET'])
 def upload_handler():
-	pass
+	auth()
+	resp = make_response(wrapper(render_template('upload.php')), 200)
+	return resp
+
+@app.route('/api/upload', methods=['POST'])
+def upload_api_handler():
+	usr = auth()
+
+	data = parse_req_body(['name', 'author', 'type', 'introduction', 'genre'])
+	try:
+		f = request.files['music_file']
+	except:
+		return fail(u'发布失败，请选择要上传的文件')
+
+	music = Music()
+	music.name = data['name']
+	if not music.name: return fail(u'请填写音乐名称')
+	music.author = data['author']
+	music.type = data['type']
+	music.username = usr.username
+	music.type = data['introduction']
+
+	music.file_path = './attachments/' + secure_filename(gen_random_string()+f.filename[-70:])
+	try:
+		f.save(music.file_path)
+	except:
+		return fail(u'保存音乐文件失败，请重试')
+
+	if data['author']:
+		artist = Artist('')
+		artist.load()
+		artist.genre = ''
+	else:
+		artist = Artist(data['author'])
+		artist.load()
+		artist.genre = data['genre']
+
+	artist.save()
+	music.save()
+	return succAndRedirect(u'成功发布', '/view/' + str(music.id))
 
 if __name__ == '__main__':
 	host = os.getenv("APP_HOST", "0.0.0.0")
 	port = int(os.getenv("APP_PORT", "7654" if globals().get('debug') else '80'))
-	app.run(host=host, port=port, debug=True)
+	app.secret_key = User.secret_salt_right + User.secret_salt_left
+	app.run(host=host, port=port, debug=True, threaded=True)
+

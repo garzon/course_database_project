@@ -73,28 +73,3 @@
 	</div>
 </div>
 
-<script>
-	angular.module('login_dialog', []).controller('dialog_controller', function($scope) {
-        $scope.msg = '';
-		$scope.isLogin = false;
-        $('form').ajaxForm({
-            dataType: 'json',
-            beforeSubmit: function() {
-                $scope.msg = '正在提交...';
-                $scope.msg_type = 'alert-warning';
-            },
-            success: function(data) {
-                $scope.msg = data['msg'];
-                if(data['failed']) {
-                    $scope.msg_type = 'alert-danger';
-                } else {
-                    $scope.msg_type = 'alert-success';
-                    if(data['redirect'])
-                        window.location = data['redirect'];
-                }
-                $scope.$apply();
-            }
-        });
-	});
-</script>
-

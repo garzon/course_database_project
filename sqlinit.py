@@ -36,6 +36,8 @@ def init_SQL():
         #get cursor
         cur = conn.cursor()
 
+        cur.execute("SET NAMES UTF8")
+
         cur.execute("DROP TABLE IF EXISTS User");
         cur.execute("DROP TABLE IF EXISTS Artist");
         cur.execute("DROP TABLE IF EXISTS Music");
@@ -52,7 +54,6 @@ def init_SQL():
         cur.execute("""create table Artist
 (author char(40) not null,
  genre char (10),
- introduction char(200),
  primary key(author))""")
 
         cur.execute("""create table Music
