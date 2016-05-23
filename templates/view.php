@@ -12,8 +12,8 @@
 			<div class="row">
 				<div class="col-md-12">
                     <h3 class="orange bold"> [[data.score]] / 5.0</h3>
-                    <p>名字：[[data.name]] <h6 class="inline-block label label-primary">[[music.type]]</h6></p>
-                    <p>作者：[[data.author]] <h6 class="inline-block label label-primary">[[music.genre]]</h6></p>
+                    <p>名字：[[data.name]] <span class="inline-block label label-primary" ng-bind="data.type"></span></p>
+                    <p>作者：[[data.author]] <span class="inline-block label label-primary" ng-bind="data.genre"></span></p>
 					<p>简介：[[data.introduction]]</p>
 				</div>
 			</div>

@@ -10,18 +10,26 @@ def gen_random_string():
 
 def auth(callback=None):
 	username = request.cookies.get('username', '')
+	if not username:
+		if callback is None:
+			abort(501)
+		else:
+			callback()
+			return
 	usr = User(username)
 	if usr.load() == False:
 		if callback is None:
 			abort(501)
 		else:
 			callback()
+			return
 	token = request.cookies.get('token', '')
 	if usr.verifyToken(token) == False:
 		if callback is None:
 			abort(501)
 		else:
 			callback()
+			return
 	session['username'] = username
 	return usr
 

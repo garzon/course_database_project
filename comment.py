@@ -10,7 +10,7 @@ class Comment(MysqlModel):
 	@classmethod
 	def getNextId(cls):
 		query = "select id from Comment order by id desc limit 1"
-		res = cls.query(query)
+		res = cls.query(query, True)
 		if len(res):
 			res = res[0][0]+1
 		else:

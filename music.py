@@ -10,7 +10,7 @@ class Music(MysqlModel):
 	@classmethod
 	def getNextId(cls):
 		query = u"select music_id from Music order by music_id desc limit 1"
-		res = cls.query(query)
+		res = cls.query(query, True)
 		if len(res):
 			res = res[0][0]+1
 		else:
@@ -35,19 +35,19 @@ class Music(MysqlModel):
 	def getComments(self):
 		query = u"select score, username, feedback from Comment where music_id = %d order by id desc" % self.id
 		cols = ['score', 'username', 'feedback']
-		res = self.query(query)
+		res = self.query(query, True)
 		return self.wrapToJson(res, cols)
 
 	def getAuthorGenre(self):
 		query = u"""select genre from Artist where author = '%s'""" % self.escape(self.author)
-		res = self.query(query)
+		res = self.query(query, True)
 		if len(res):
 			return res[0][0]
 		return ''
 
 	def getScore(self):
 		query = u"""select avg(score) from Comment where music_id = %d""" % self.id
-		res = self.query(query)
+		res = self.query(query, True)
 		if len(res):
 			res = res[0][0]
 		else:
@@ -56,14 +56,14 @@ class Music(MysqlModel):
 
 	def delete(self):
 		query = u"delete from Comment where music_id = %d" % self.id
-		self.query(query)
+		self.query(query, False)
 		MysqlModel.delete(self)
 
 	@classmethod
 	def getList(cls, subclause=''):
 		query = u"select music_id, name, author, type, username, introduction from Music %s order by music_id desc" % ('where ' + subclause if subclause else '')
 		cols = ['music_id', 'name', 'author', 'type', 'username', 'introduction']
-		res = cls.query(query)
+		res = cls.query(query, True)
 		return cls.wrapToJson(res, cols)
 
 	@classmethod
@@ -75,5 +75,5 @@ class Music(MysqlModel):
 					order by music_id desc""" % (score, 'and ' + subclause if subclause else '')
 		cols = ['music_id', 'name', 'author', 'type', 'username', 'introduction']
 		#raise Exception(query)
-		res = cls.query(query)
+		res = cls.query(query, True)
 		return cls.wrapToJson(res, cols)

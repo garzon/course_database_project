@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-debug = True
+#debug = True
 
 import MySQLdb
 
@@ -48,15 +48,19 @@ class MysqlModel:
 		if MysqlModel.conn is not None: MysqlModel.conn.close()
 
 	@classmethod
-	def query(cls, sql):
+	def query(cls, sql, hasData):
 		conn = cls.connect()
 		cur = conn.cursor()
 		#cur.execute("SET NAMES UTF8")
-		cur.execute(sql)
-		res = cur.fetchall()
+		try:
+			cur.execute(sql)
+		except Exception:
+			raise Exception(sql)
+		if hasData: res = cur.fetchall()
 		cur.close()
 		conn.commit()
-		return res
+		conn.close()
+		if hasData: return res
 
 	def __init__(self, id):
 		self._isLoaded = False
@@ -75,7 +79,7 @@ class MysqlModel:
 		self._isLoaded = True
 
 		if self.id is not None:
-			res = self.query((u"select * from %s" % self.table_name) + self.whereClause())
+			res = self.query((u"select * from %s" % self.table_name) + self.whereClause(), True)
 			if len(res) != 0:
 				for key, val in zip(self.colmap, res[0]):
 					setattr(self, key, val)
@@ -89,7 +93,7 @@ class MysqlModel:
 			if self.load():
 				raise Exception(u'数据在删除前必须先载入')
 		if self._exist:
-			self.query((u"delete from %s" % self.table_name) + self.whereClause())
+			self.query((u"delete from %s" % self.table_name) + self.whereClause(), False)
 
 	def save(self):
 		if self._isLoaded == False:
@@ -99,14 +103,14 @@ class MysqlModel:
 			query = u'update %s set ' % self.table_name
 			query += ','.join([u"%s='%s'" % (key, i) for key in self.colmap for i in [self.escape(getattr(self, key, None))] if i is not None])
 			query += self.whereClause()
-			self.query(query)
+			self.query(query, False)
 		else:
-			query = u'insert into %s(' % self.table_name
-			query += u','.join([u'%s' % key for key in self.colmap])
-			query += u') VALUES ('
+			query = u'insert into %s' % self.table_name
+			#query += u','.join([u'%s' % key for key in self.colmap])
+			query += u' VALUES ('
 			query += u','.join([(u"'%s'" % i if type(i)!=type(1) else u"%d" % i) if i is not None else u'NULL' for key in self.colmap for i in [self.escape(getattr(self, key, None))]])
 			query += u')'
-			self.query(query)
+			self.query(query, False)
 		self._exist = True
 
 	@classmethod
@@ -114,6 +118,7 @@ class MysqlModel:
 		if type(1) == type(st) or type(1L) == type(st): return st
 		if st is None: return 'NULL'
 		st = MySQLdb.escape_string(st)
+		st = st.replace("\\'", "''")
 		return st
 
 	@classmethod
