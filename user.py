@@ -25,7 +25,7 @@ class User(MysqlModel):
 	@classmethod
 	def check_email_registered(cls, mail):
 		mail = cls.escape(mail)
-		res = cls.query("select count(*) from `User` where mail='%s'" % mail)
+		res = cls.query("select count(*) from User where mail='%s'" % mail)
 		if res[0][0] != 0:
 			return True
 		return False

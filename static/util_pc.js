@@ -195,11 +195,11 @@ $document.ready(function() {
 
 // category component
 $document.ready(function() {
-    var $position = $(".form-category-selector");
     $(".fabu-form-category").on('click', function(e) {
         e.preventDefault();
         var $this = $(this);
         var text = $this.text();
+        var $position = $this.parent().parent().parent().siblings('input');
         $position.val(text);
         $this.parent().parent().siblings('button').html(text + ' <span class="caret"></span>');
     });

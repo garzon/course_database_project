@@ -38,6 +38,13 @@ class Music(MysqlModel):
 		res = self.query(query)
 		return self.wrapToJson(res, cols)
 
+	def getAuthorGenre(self):
+		query = u"""select genre from Artist where author = '%s'""" % self.escape(self.author)
+		res = self.query(query)
+		if len(res):
+			return res[0][0]
+		return ''
+
 	def getScore(self):
 		query = u"""select avg(score) from Comment where music_id = %d""" % self.id
 		res = self.query(query)
@@ -53,17 +60,20 @@ class Music(MysqlModel):
 		MysqlModel.delete(self)
 
 	@classmethod
-	def getList(cls):
-		query = u"select music_id, `name`, author, type, username, introduction from Music order by music_id desc"
+	def getList(cls, subclause=''):
+		query = u"select music_id, name, author, type, username, introduction from Music %s order by music_id desc" % ('where ' + subclause if subclause else '')
 		cols = ['music_id', 'name', 'author', 'type', 'username', 'introduction']
 		res = cls.query(query)
 		return cls.wrapToJson(res, cols)
 
 	@classmethod
-	def getListByScore(cls, score):
-		query = u"""select music_id, `name`, author, type, username, introduction from Music
-					where (select avg(score) as avg_score from Comment where avg_score > %d)
-					order by music_id desc""" % score
+	def getListByScore(cls, score, subclause=''):
+		if score == 0: return cls.getList(subclause)
+		query = u"""select music_id, name, author, type, username, introduction from Music
+					where (select avg(score) as avg_score from Comment as X where X.music_id = music_id) > %d
+					%s
+					order by music_id desc""" % (score, 'and ' + subclause if subclause else '')
 		cols = ['music_id', 'name', 'author', 'type', 'username', 'introduction']
+		#raise Exception(query)
 		res = cls.query(query)
 		return cls.wrapToJson(res, cols)

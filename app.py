@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-debug = True
+
 import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -16,6 +16,7 @@ from user import User
 from music import Music
 from artist import Artist
 from comment import Comment
+from mysqlmodel import MysqlModel
 
 app = Flask(__name__)
 
@@ -50,19 +51,24 @@ def dummy():
 @app.route('/')
 def listing_handler():
 	auth(dummy)
-	return make_response(wrapper(render_template('index.php', request=request)), 200)
+	categories = ['folk','pop','jazz','electrical','soundtrack','newage','classical']
+	return make_response(wrapper(render_template('index.php', request=request, categories=categories)), 200)
 
 @app.route('/api/list', methods=['GET'])
 def getlisting_api_handler():
 	score = request.args.get('score', None)
+	music_cat = request.args.get('music_cat', '')
+	author_cat = request.args.get('author_cat', '')
+	subclause = u''
+	if music_cat:
+		subclause = u"type='%s' " % MysqlModel.escape(music_cat)
+	if author_cat:
+		if subclause: subclause += u'and '
+		subclause += u"(select genre from Artist as Y where Y.author=Music.author)='%s' " % MysqlModel.escape(author_cat)
 	if score:
-		try:
-			score = int(score)
-			return make_response(json.dumps(Music.getListByScore(score)), 200)
-		except:
-			pass
-
-	return make_response(json.dumps(Music.getList()), 200)
+		score = int(score)
+		return make_response(json.dumps(Music.getListByScore(score, subclause)), 200)
+	return make_response(json.dumps(Music.getList(subclause)), 200)
 
 @app.route('/api/delete/<int:music_id>', methods=['POST'])
 def delete_api_handler(music_id):
@@ -157,6 +163,7 @@ def detail_api_handler(music_id):
 	obj['comments'] = music.getComments()
 	obj['content_type'] = music.getContentType()
 	obj['score'] = music.getScore()
+	obj['genre'] = music.getAuthorGenre()
 
 	return make_response(json.dumps(obj), 200)
 
@@ -170,7 +177,7 @@ def upload_handler():
 def upload_api_handler():
 	usr = auth()
 
-	data = parse_req_body(['name', 'author', 'type', 'introduction', 'genre'])
+	data = parse_req_body(['name', 'author', 'mtype', 'introduction', 'genre'])
 	try:
 		f = request.files['music_file']
 	except:
@@ -180,9 +187,9 @@ def upload_api_handler():
 	music.name = data['name']
 	if not music.name: return fail(u'请填写音乐名称')
 	music.author = data['author']
-	music.type = data['type']
+	music.type = data['mtype']
 	music.username = usr.username
-	music.type = data['introduction']
+	music.introduction = data['introduction']
 
 	music.file_path = './attachments/' + secure_filename(gen_random_string()+f.filename[-70:])
 	try:
@@ -191,13 +198,13 @@ def upload_api_handler():
 		return fail(u'保存音乐文件失败，请重试')
 
 	if data['author']:
-		artist = Artist('')
-		artist.load()
-		artist.genre = ''
-	else:
 		artist = Artist(data['author'])
 		artist.load()
 		artist.genre = data['genre']
+	else:
+		artist = Artist('')
+		artist.load()
+		artist.genre = ''
 
 	artist.save()
 	music.save()
@@ -205,7 +212,7 @@ def upload_api_handler():
 
 if __name__ == '__main__':
 	host = os.getenv("APP_HOST", "0.0.0.0")
-	port = int(os.getenv("APP_PORT", "7654" if globals().get('debug') else '80'))
+	port = int(os.getenv("APP_PORT", "7654"))
 	app.secret_key = User.secret_salt_right + User.secret_salt_left
 	app.run(host=host, port=port, debug=True, threaded=True)
 

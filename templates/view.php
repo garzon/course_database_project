@@ -6,14 +6,14 @@
 					<li role="presentation" class="active">
 						<a href="#">Introduction</a>
 					</li>
-					<li role="presentation"><a href="#comment-history">Comments([[data.commentNums]])</a></li>
+					<li role="presentation"><a href="#comment-history">Comments([[data.comments.length]])</a></li>
 				</ul>
 			</div>
 			<div class="row">
 				<div class="col-md-12">
                     <h3 class="orange bold"> [[data.score]] / 5.0</h3>
-                    <p>名字：[[data.name]]</p>
-                    <p>作者：[[data.author]]</p>
+                    <p>名字：[[data.name]] <h6 class="inline-block label label-primary">[[music.type]]</h6></p>
+                    <p>作者：[[data.author]] <h6 class="inline-block label label-primary">[[music.genre]]</h6></p>
 					<p>简介：[[data.introduction]]</p>
 				</div>
 			</div>

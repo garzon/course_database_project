@@ -24,7 +24,7 @@
 				<label for="category" class="col-md-1-2 control-label">音乐类别：</label>
 				<div class="row col-md-10">
 					<div class="col-md-6">
-						<input class="form-control form-category-selector myHidden" name='type' required="required" type="text" />
+						<input class="form-control form-category-selector myHidden" name='mtype' required="required" type="text" />
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle fabu-form-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 请选择一个类目 <span class="caret"></span>

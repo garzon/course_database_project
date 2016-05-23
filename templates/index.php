@@ -2,8 +2,22 @@
 
 	<div class="container main-block"  ng-app="mainListing" ng-controller="listingController">
         
-        <div class="listing-block">
-            <p>按评分排序：<a href="#" class="opbtn-filter" data-prop="score" data-val="0">全部</a> <a href="#" class="opbtn-filter" data-prop="score" data-val="1">1+</a> <a href="#" class="opbtn-filter" data-prop="score" data-val="2">2+</a> <a href="#" class="opbtn-filter" data-prop="score" data-val="3">3+</a> <a href="#" class="opbtn-filter" data-prop="score" data-val="4">4+</a> </p>
+        <div class="listing-block" style="padding: 20px; margin-bottom: 10px;">
+            <div class="well">
+                <p>按评分：<a href="#" class="opbtn-filter" data-prop="score" data-val="0">全部</a> <a href="#" class="opbtn-filter" data-prop="score" data-val="1">1.0+</a> <a href="#" class="opbtn-filter" data-prop="score" data-val="2">2.0+</a> <a href="#" class="opbtn-filter" data-prop="score" data-val="3">3.0+</a> <a href="#" class="opbtn-filter" data-prop="score" data-val="4">4.0+</a> </p>
+                <p>按音乐类别：
+                    <a href="#" class="opbtn-filter" data-prop="music_cat" data-val="">全部</a> 
+                    {% for category in categories %}
+                    <a href="#" class="opbtn-filter" data-prop="music_cat" data-val="{{category}}">{{category}}</a> 
+                    {% endfor %}
+                </p>
+                <p>按艺人流派：
+                    <a href="#" class="opbtn-filter" data-prop="author_cat" data-val="">全部</a> 
+                    {% for category in categories %}
+                    <a href="#" class="opbtn-filter" data-prop="author_cat" data-val="{{category}}">{{category}}</a> 
+                    {% endfor %}
+                </p>
+            </div>
         </div>
     
         <blockquote class="listing-block" ng-repeat="music in data">

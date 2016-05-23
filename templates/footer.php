@@ -33,11 +33,9 @@
 					</div>
 					<div class="col-md-6 col-sm-6 col-xs-8 grey">
 						<p>Music Online</p>
-						<p class="small">Copyright. <a href="mailto:garzonou@gmail.com">garzon</a></p>
 					</div>
 					<div class="col-md-4 col-sm-4 col-xs-4 grey">
-						<p>time</p>
-						<p class="small">100 ms</p>
+
 					</div>
 				</div>
 			</div>

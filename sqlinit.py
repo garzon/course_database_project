@@ -1,7 +1,7 @@
 #!/bin/python
 # -*- coding: utf-8 -*-
 
-debug = True
+#debug = True
 
 if globals().get('debug'):
 	import MySQLdb
@@ -12,15 +12,15 @@ else:
 
 def init_SQL():
 
-    Database = 'd_1460371579579196'
+    Database = 'd_1460371498316150'
     if globals().get('debug'):
         Server = 'localhost'
         Username = 'root'
         Password = 'toor'
     else:
         Server = 'ifxserver1'
-        Username = 'lphmxmnl'
-        Password = 'gfAHlK4TUv'
+        Username = 'bhdaatqt'
+        Password = 'eLLANNdLpU'
 
     try:
         cur = conn = None
@@ -36,7 +36,7 @@ def init_SQL():
         #get cursor
         cur = conn.cursor()
 
-        cur.execute("SET NAMES UTF8")
+        #cur.execute("SET NAMES UTF8")
 
         cur.execute("DROP TABLE IF EXISTS User");
         cur.execute("DROP TABLE IF EXISTS Artist");
