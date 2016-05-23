@@ -94,13 +94,12 @@
 				</div>
 
 				<span class="col-md-7 col-sm-5 col-xs-8">
-					<paper-tabs noink class="blue col-md-9 col-xs-12">
-						<paper-tab>Music Online</paper-tab>
-					</paper-tabs>
+					Music Online
 				</span>
 
-				<span class="pull-right">
+				<span class="pull-right black">
 					{% if session.get('username', None) %}
+                        欢迎你，{{session.get('username', None)}}！
 						<a href="/upload" class="btn btn-sm btn-success font-black">分享音乐</a>
 						<a href="/login" class="btn btn-sm btn-default font-black">注销</a>
 					{% else %}
